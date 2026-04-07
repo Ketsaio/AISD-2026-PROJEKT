@@ -1,0 +1,19 @@
+from enum import Enum
+
+class Surowiec(Enum):
+	ZLOTO = 0
+	WEGIEL = 1
+	MIEDZ = 2
+	URAN = 3
+
+class Punkt:
+	def __init__(self, x: float, y: float) -> None: ...
+	def dystans(self, other: Punkt) -> float: ...
+
+class Kopalnia:
+	def __init__(self, x: float, y: float, s: Surowiec, c: int) -> None: ...
+	def dystans(self, other: Punkt) -> float: ...
+
+class Krasnoludek:
+	def __init__(self, x: float, y: float, s: Surowiec) -> None: ...
+	def dystans(self, other: Punkt) -> float: ...
