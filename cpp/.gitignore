@@ -2,6 +2,9 @@
 build/
 CMakeFiles/
 CMakeCache.txt
+pybind11/tests/
+pybind11/docs/
+pybind11/.github/
 test.py
 Makefile
 cmake_install.cmake
