@@ -1,4 +1,4 @@
-from enum import Enum
+# from enum import Enum
 
 class Surowiec(Enum):
 	ZLOTO = 0
@@ -17,3 +17,5 @@ class Kopalnia:
 class Krasnoludek:
 	def __init__(self, x: float, y: float, s: Surowiec) -> None: ...
 	def dystans(self, other: Punkt) -> float: ...
+
+def mcmf(workers: list[Worker], mines: list[Mine]) -> list[tuple[int, int]]: ...

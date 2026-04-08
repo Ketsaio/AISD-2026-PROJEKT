@@ -1,6 +1,6 @@
 CPP = g++
 CPPFLAGS = -O3 -Wall -shared -std=c++11 -fPIC
-SOURCES = src/api.cpp src/models2.cpp
+SOURCES = src/api.cpp src/models2.cpp src/algorithm.cpp
 
 all: models
 

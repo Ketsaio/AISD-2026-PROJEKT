@@ -8,3 +8,6 @@ b = models.Kopalnia(10, 10, models.Surowiec.WEGIEL, 5)
 
 print(x.dystans(y))
 print(a.dystans(b))
+
+lista = models.mcmf([a, a], [b, b])
+print(lista)

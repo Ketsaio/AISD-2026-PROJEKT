@@ -1,6 +1,7 @@
 #include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
 #include "models2.hpp"
-// #include "algorithms.hpp"
+#include "algorithm.hpp"
 
 namespace py = pybind11;
 
@@ -20,4 +21,6 @@ PYBIND11_MODULE(models, handle) {
 
 	py::class_<Worker, Node>(handle, "Krasnoludek")
 		.def(py::init<double, double, Resource>());
+
+	handle.def("mcmf", &minimumCostMaximumFlow);
 }
