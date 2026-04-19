@@ -26,7 +26,7 @@ class Huffman:
             self.kody = {tekst : "0"}
             self.korzen = Node(None, 1)
             self.korzen.lewo = Node(tekst, 1)
-            print("Jeden znak")
+            # print("Jeden znak")
         
         else:
             self.kolejka = self.przygotowanie_kolejki_priorytetowej()
@@ -34,7 +34,8 @@ class Huffman:
             self.kody = {}
             self.kod = None
             self.generowanie_kodow(self.korzen)
-            print("1 < znaków")
+            # print("1 < znaków")
+
 
     # przygotowanie kolejki priorytetowej opartej na kopcu aby otrzymać złożoność O(n log n)
     def _przygotowanie_kolejki_priorytetowej(self) -> list:
@@ -65,7 +66,7 @@ class Huffman:
 
         return heapq.heappop(self.kolejka)
 
-    # funkcja generująca kody do kompresji przy użyciu drzewa Huffmana
+    # metoda generująca kody do kompresji przy użyciu drzewa Huffmana
     def _generowanie_kodow(self, wezel : Node, aktualny_kod = "") -> dict:
         
         if wezel is None:
@@ -78,6 +79,7 @@ class Huffman:
         self.generowanie_kodow(wezel.lewo, aktualny_kod + "0")
         self.generowanie_kodow(wezel.prawo, aktualny_kod + "1")
 
+    # kompresja do Huffmana
     def kompresuj(self) -> str:
         skompresowany = ""
         for znak in self.tekst:
@@ -86,6 +88,7 @@ class Huffman:
         self.kod = skompresowany
         return skompresowany
 
+    # dekompresja z Huffmana na czytelny tekst
     def dekompresuj(self) -> str:
         odpakowany = ""
         obecny_wezel = self.korzen
@@ -102,12 +105,49 @@ class Huffman:
 
         return odpakowany
 
+    def zwroc_tekst(self):
+        return self.tekst
+    
+class KMP:
+    def __init__(self):
+        pass
+
+    def _stworz_LPS(self, wzorzec : str) -> list[int]:
+        
+        lista = [0] * len(wzorzec)
+        dlugosc = 0
+        i = 1
+        
+        while i < len(wzorzec):
+
+            if wzorzec[i] == wzorzec[dlugosc]:
+                dlugosc += 1
+                lista[i] = dlugosc
+                i += 1
+
+            else:
+
+                if dlugosc != 0:
+                    dlugosc = lista[dlugosc-1]
+
+                else:
+                    lista[i] = 0
+                    i += 1
+
+        return lista
+
+    def algorytm_KMP():
+        pass
+
 
 if __name__ == "__main__":
 
-    test = Huffman(input("> "))
-    skompresowane = test.kompresuj()
-    odpakowane = test.dekompresuj()
+    # test = Huffman(input("> "))
+    # skompresowane = test.kompresuj()
+    # odpakowane = test.dekompresuj()
 
-    print(skompresowane)
-    print(odpakowane)
+    # print(skompresowane)
+    # print(odpakowane)
+    
+    test2 = KMP()
+    print(test2.stworz_LPS("ABABACA"))
