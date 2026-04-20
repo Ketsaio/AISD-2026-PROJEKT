@@ -21,19 +21,20 @@ class Huffman:
     def __init__(self, tekst : str):
 
         self.tekst = tekst
-        if len(tekst) == 1:
-            self.kod = 0
-            self.kody = {tekst : "0"}
-            self.korzen = Node(None, 1)
-            self.korzen.lewo = Node(tekst, 1)
+        if len(set(tekst)) == 1:
+            znak = tekst[0]
+            self.kody = {znak : "0"}
+            self.korzen = Node(None, len(tekst))
+            self.korzen.lewo = Node(znak, len(tekst))
+            self.kod = None
             # print("Jeden znak")
         
         else:
-            self.kolejka = self.przygotowanie_kolejki_priorytetowej()
-            self.korzen = self.drzewo_huffmana()
+            self.kolejka = self._przygotowanie_kolejki_priorytetowej()
+            self.korzen = self._drzewo_huffmana()
             self.kody = {}
             self.kod = None
-            self.generowanie_kodow(self.korzen)
+            self._generowanie_kodow(self.korzen)
             # print("1 < znaków")
 
 
@@ -76,8 +77,8 @@ class Huffman:
             self.kody[wezel.znak] = aktualny_kod
             return
         
-        self.generowanie_kodow(wezel.lewo, aktualny_kod + "0")
-        self.generowanie_kodow(wezel.prawo, aktualny_kod + "1")
+        self._generowanie_kodow(wezel.lewo, aktualny_kod + "0")
+        self._generowanie_kodow(wezel.prawo, aktualny_kod + "1")
 
     # kompresja do Huffmana
     def kompresuj(self) -> str:
@@ -105,6 +106,7 @@ class Huffman:
 
         return odpakowany
 
+    # zwraca tekst podany przy inicjalizacji
     def zwroc_tekst(self):
         return self.tekst
     
@@ -126,7 +128,6 @@ class KMP:
                 i += 1
 
             else:
-
                 if dlugosc != 0:
                     dlugosc = lista[dlugosc-1]
 
@@ -136,8 +137,34 @@ class KMP:
 
         return lista
 
-    def algorytm_KMP():
-        pass
+    def algorytm_KMP(self, tekst : str, wzorzec : str) -> list[int]:
+        lista = self._stworz_LPS(wzorzec)
+
+        wyniki = []
+
+        i = 0
+        j = 0
+
+        while i < len(tekst):
+            if tekst[i] == wzorzec[j]:
+                j += 1
+                i += 1
+                if j == len(wzorzec):
+                    pozycja_startowa = i - j
+                    wyniki.append(pozycja_startowa)
+
+                    j = lista[j-1]
+            
+            else:
+                if j != 0:
+                    j = lista[j-1]
+                    
+                else:
+                    i += 1
+
+        return wyniki
+
+        
 
 
 if __name__ == "__main__":
@@ -149,5 +176,6 @@ if __name__ == "__main__":
     # print(skompresowane)
     # print(odpakowane)
     
-    test2 = KMP()
-    print(test2.stworz_LPS("ABABACA"))
+    # test2 = KMP()
+    # print(test2.stworz_LPS("ABABACA"))
+    pass
