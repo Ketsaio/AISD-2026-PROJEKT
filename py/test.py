@@ -1,16 +1,24 @@
 import models
+import random
+import time
 
-x = models.Punkt(2, 3)
-y = models.Punkt(3, 2)
+workers = []
+mines = []
 
-a1 = models.Krasnoludek(5, 5, models.Surowiec.MIEDZ)
-a2 = models.Krasnoludek(2, 3, models.Surowiec.MIEDZ)
-a3 = models.Krasnoludek(50, 50, models.Surowiec.MIEDZ)
-b1 = models.Kopalnia(10, 10, models.Surowiec.WEGIEL, 5)
-b2 = models.Kopalnia(55, 55, models.Surowiec.WEGIEL, 2)
+w = int(input("num of workers: "))
+m = int(input("num of mines: "))
+c = int(input("mine capacity: "))
 
-print(x.dystans(y))
-print(a1.dystans(b1))
+print(f"testing {w} workers with {m} mines of capacity {c}")
+startTime = time.perf_counter()
 
-lista = models.mcmf([a1, a2, a3], [b1, b2])
-print(lista)
+for _ in range(w):	
+	workers.append(models.Krasnoludek(random.random() * 1000, random.random() * 1000, models.Surowiec.URAN))
+
+for _ in range(m):
+	mines.append(models.Kopalnia(random.random() * 1000, random.random() * 1000, models.Surowiec.MIEDZ, c))
+
+models.mcmf(workers, mines)
+
+endTime = time.perf_counter()
+print(f"time: {endTime - startTime:.6f} seconds")

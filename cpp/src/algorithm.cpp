@@ -21,8 +21,8 @@ private:
 		while (true) {
 			// BELLMAN FORD
 			// distance source to each node
-			vector<int> dist(numNodes, __INT_MAX__);
-			dist[sourceIdx] = 0;
+			vector<double> dist(numNodes, __INT_MAX__);
+			dist[sourceIdx] = 0.0f;
 
 			// path tracking
 			vector<int> parentNode(numNodes, -1);
