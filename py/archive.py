@@ -4,22 +4,32 @@ import heapq
 
 # przygotowanie obiktu Node służącego za węzeł
 class Node:
+    """
+    Węzeł używany do budowy drzewa Huffmana.
+    Przechowuje znak, częstotliwość występowania i dzieci.
+    """
+
     def __init__(self, znak : str, czestotliwosc : int):
         self.lewo = None
         self.prawo = None
         self.znak = znak
         self.czestotliwosc = czestotliwosc
 
-    def __lt__(self, other : Node):
+    # magiczna metoda (przeciążenie w C++) potrzebne do powrónania które wykonuje heapq
+    def __lt__(self, other : Node) -> bool:
         return self.czestotliwosc < other.czestotliwosc
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Node({self.znak}, {self.czestotliwosc})"
 
 class Huffman:
+    """
+    Klasa odpowiadająca za generowanie drzewa Huffmana, przechowywanie go oraz kompresje i dekompresje.
+    """
 
     def __init__(self, tekst : str):
 
+        # obsługa edgecase gdy tekst składa sie z jednego tego samego znaku
         self.tekst = tekst
         if len(set(tekst)) == 1:
             znak = tekst[0]
@@ -38,8 +48,11 @@ class Huffman:
             # print("1 < znaków")
 
 
-    # przygotowanie kolejki priorytetowej opartej na kopcu aby otrzymać złożoność O(n log n)
     def _przygotowanie_kolejki_priorytetowej(self) -> list:
+        """
+        Zlicza znaki i przygotowuje kolejke priorytetową (kopiec minimalny) aby uzyskać złożoność O(n log n)
+        zamiast O(n^2) w przypadku zwykłej implementacji kolejki priorytetowej.
+        """
 
         czestotliwosci = Counter(self.tekst)
 
@@ -51,8 +64,10 @@ class Huffman:
 
         return priorytetowa
 
-    # tworzy drzewo huffmana i zwraca korzeń drzewa
     def _drzewo_huffmana(self) -> Node:
+        """
+        Buduje drzewo Huffmana, łączy węzły o najmniejszych częstotliwościach.
+        """
 
         while len(self.kolejka) > 1:
             lewo = heapq.heappop(self.kolejka)
@@ -67,9 +82,12 @@ class Huffman:
 
         return heapq.heappop(self.kolejka)
 
-    # metoda generująca kody do kompresji przy użyciu drzewa Huffmana
-    def _generowanie_kodow(self, wezel : Node, aktualny_kod = "") -> dict:
-        
+    def _generowanie_kodow(self, wezel : Node, aktualny_kod = "") -> None:
+        """
+        Rekurencyjnie przechodzi przez drzewo i generuje kody binarne dla drzewa Huffmana
+        które są używane przy kompresji i dekompresji.
+        """
+
         if wezel is None:
             return
         
@@ -80,8 +98,12 @@ class Huffman:
         self._generowanie_kodow(wezel.lewo, aktualny_kod + "0")
         self._generowanie_kodow(wezel.prawo, aktualny_kod + "1")
 
-    # kompresja do Huffmana
+    
     def kompresuj(self) -> str:
+        """
+        Kompresuje tekst do kodu używanego w drzewie Huffmana.
+        """
+
         skompresowany = ""
         for znak in self.tekst:
             skompresowany += self.kody[znak]
@@ -89,8 +111,11 @@ class Huffman:
         self.kod = skompresowany
         return skompresowany
 
-    # dekompresja z Huffmana na czytelny tekst
     def dekompresuj(self) -> str:
+        """
+        Dekompresuje kod do czytelnego tekstu.
+        """
+
         odpakowany = ""
         obecny_wezel = self.korzen
 
@@ -107,14 +132,22 @@ class Huffman:
         return odpakowany
 
     # zwraca tekst podany przy inicjalizacji
-    def zwroc_tekst(self):
+    @property
+    def oryginalny_tekst(self) -> str:
         return self.tekst
     
 class KMP:
-    def __init__(self):
-        pass
+    """
+    Klasa realizująca algorytm KMP (Knutha-Morrisa-Pratta).
+    Nie wymaga istnienia obiektu przez użycie @staticmethod.
+    """
 
-    def _stworz_LPS(self, wzorzec : str) -> list[int]:
+    @staticmethod
+    def _stworz_LPS(wzorzec : str) -> list[int]:
+        """
+        Tworzy tablice LPS (TU OPISAĆ DOKŁADNIE)
+
+        """
         
         lista = [0] * len(wzorzec)
         dlugosc = 0
@@ -137,8 +170,13 @@ class KMP:
 
         return lista
 
-    def algorytm_KMP(self, tekst : str, wzorzec : str) -> list[int]:
-        lista = self._stworz_LPS(wzorzec)
+    @staticmethod
+    def algorytm_KMP(tekst : str, wzorzec : str) -> list[int]:
+        """
+        Wyszukuje wszystkie wystąpienia wzorca z złożonością O(n + m)
+        """
+        
+        lista = KMP._stworz_LPS(wzorzec)
 
         wyniki = []
 
@@ -170,6 +208,7 @@ class KMP:
 if __name__ == "__main__":
 
     # test = Huffman(input("> "))
+    # print(test.oryginalny_tekst)
     # skompresowane = test.kompresuj()
     # odpakowane = test.dekompresuj()
 
@@ -178,4 +217,4 @@ if __name__ == "__main__":
     
     # test2 = KMP()
     # print(test2.stworz_LPS("ABABACA"))
-    pass
+    print(KMP._stworz_LPS("ABABACA"))
