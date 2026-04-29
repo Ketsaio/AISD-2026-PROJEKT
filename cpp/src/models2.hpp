@@ -9,7 +9,7 @@ enum Resource {
 };
 
 class Node {
-protected:
+public:
 	double x;
 	double y;
 
