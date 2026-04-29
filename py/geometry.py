@@ -19,43 +19,31 @@ def orientation(a: Punkt, b: Punkt, c: Punkt) -> float:
 
 
 def graham_scan(mines: List[Kopalnia]) -> List[Punkt]:
-    """
-    Implementacja algorytmu Grahama (otoczka wypukła).
-
-    Wejście:
-        mines - lista kopalń
-
-    Wyjście:
-        lista punktów tworzących otoczkę wypukłą (hull)
-    """
-
-    # Konwersja kopalń na punkty geometryczne
     points = [Punkt(m.x, m.y) for m in mines]
 
-    # Jeśli mamy 0-1 punktów, zwracamy od razu
     if len(points) <= 1:
         return points
 
-    # Punkt startowy - najniższy (y), a potem najmniejszy x
     start = min(points, key=lambda p: (p.y, p.x))
 
-    # Funkcja pomocnicza do sortowania kątowego
-    def polar(p: Punkt):
-        return (p.y - start.y, p.x - start.x)
+    def polar_angle(p: Punkt):
+        return math.atan2(p.y - start.y, p.x - start.x)
 
-    # Sortowanie punktów względem kąta polarnego
-    points.sort(key=lambda p: polar(p))
+    def distance(p: Punkt):
+        return (p.x - start.x)**2 + (p.y - start.y)**2
 
-    hull = []  # stos przechowujący otoczkę
+    
+    points.sort(key=lambda p: (polar_angle(p), distance(p)))
 
-    # Budowanie otoczki wypukłej
+    hull = []
+
     for p in points:
-        # Usuwamy punkty, które psują wypukłość (skręt w prawo)
         while len(hull) >= 2 and orientation(hull[-2], hull[-1], p) <= 0:
             hull.pop()
         hull.append(p)
 
     return hull
+
 
 
 def perimeter(hull: List[Punkt]) -> float:
