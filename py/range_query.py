@@ -1,8 +1,3 @@
-import sys
-
-# Dodanie ścieżki do projektu
-sys.path.append(r"C:\Users\Filip\Desktop\AISD-2026-PROJEKT")
-
 from typing import List
 
 

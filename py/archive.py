@@ -111,7 +111,7 @@ class Huffman:
         self.kod = skompresowany
         return skompresowany
 
-    def dekompresuj(self) -> str:
+    def dekompresuj(self, kod : str = None) -> str:
         """
         Dekompresuje kod do czytelnego tekstu.
         """
@@ -119,7 +119,14 @@ class Huffman:
         odpakowany = ""
         obecny_wezel = self.korzen
 
-        for znak in self.kod:
+        uzywany_kod = None
+
+        if not kod:
+            uzywany_kod = self.kod
+        else:
+            uzywany_kod = kod
+
+        for znak in uzywany_kod:
             if znak == "0":
                 obecny_wezel = obecny_wezel.lewo
             else:

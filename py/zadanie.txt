@@ -1,0 +1,52 @@
+Algorytmy i Struktury Danych II - Projekt 2026
+Pracując nad poniższym projektem, należy: odfiltrować informacje istotne od nieistotnych;
+sformalizować problem i podać jego specyfikację; do rozwiązania wykorzystać odpowiednie
+struktury danych oraz algorytmy; opisać teoretycznie rozwiązanie; przeanalizować jego optymalność oraz złożoność czasową/pamięciową; zaimplementować rozwiązanie w dowolnym języku
+programowania; przeprowadzić testy na różnych przykładach.
+Problem
+Odkąd królewna Śnieżka wraz z księciem z bajki rządzą krasnoludkami, ich królestwo nabiera siły i rośnie. Obecnie zamieszkuje je o wiele więcej niż tylko siedmiu krasnoludków. Każdy
+z nich jest specjalistą w swoim fachu i w kopalniach lub wyrobiskach potrafi wydobywać różne
+minerały. Królewna zna każdego ze swoich poddanych i wie jakie minerały każdy z nich potrafi
+wydobywać. To ona decyduje o miejscu pracy każdego z krasnoludków, jest to dla niej niełatwym zadaniem. Chcąc dbać o swoich obywateli, zapewniając im dostatek, królewna zleciła
+badania geologiczne w swoim kraju. Dzięki temu ma informacje o położeniu poszczególnych
+złóż w swoim kraju i wie, jaka jest ich wydajność (ilu krasnoludków może pracować w tym
+miejscu). Okazuje się, że najważniejsza jest miłość do pracy, którą się wykonuje. To znaczy, że
+jeśli krasnoludek pracuje przy materii zgodnej z jego preferencjami, wydobędzie kruszec o stałej
+wartości, niezależnie czy kopie złoto, węgiel, rudę miedzi, czy inny surowiec. Królewna Śnieżka
+poprosiła, abyś na podstawie posiadanych przez nią informacji pomógł jej przydzielić pracę
+każdemu z krasnoludków.
+Po rozmowie z księciem okazało się, że jego ukochana bardzo dużo czasu spędza w kuchni,
+nadzorując gotowanie owsianki dla wygłodniałych brodaczy. Ilość potrzebnej owsianki zwiększa się, gdy krasnoludki muszą pokonać większą odległość z domu do pracy (można przyjąć,
+że jest to jedyny czynnik). Książę, chcąc ulżyć swojej wybrance, zmierzył i spisał odległości,
+pomiędzy każdym z wyrobisk i domkiem każdego z krasnoludków. Prosi, abyś uwzględnił te
+informacje. Przy podziale pracy chciałby, aby sumaryczna odległość, którą każdego dnia muszą pokonać krasnoludki była możliwie jak najmniejsza, przy czym nie możemy pozwolić, żeby
+spadła wartość produkowanych dóbr.
+Niestety nie jest to jedyny problem. Królewna Śnieżka po incydencie ze złą królową jest
+nieco drażliwa, gdy pojawia się temat jabłek. Nakazała wyciąć wszystkie jabłonie w królestwie
+i zabroniła spożywania owoców. Krnąbrne krasnoludki starają się jednak wzbogacić swoją dietę
+o pyszne renety, antonówki, cortlandy, papierówki i ligole. Szmuglują przez granice królestwa
+pewne ilości tych owoców. W celu egzekucji prawa, zakazującego spożywania jabłek na terenie królestwa, książę codziennie rano musi okrążyć teren, na którym znajdują się wszystkie
+użytkowane kopalnie. Chciałby, żeby ta codziennie pokonywana odległość była możliwie mała.
+Gdy i to nie przynosiło skutku, książę wzdłuż trasy swego przejazdu rozstawił dekametrowców (krasnoludki uzbrojone w łuki ustawione co określoną liczbę metrów). Mają one zapobiec
+przerzucaniu jabłek przez granicę. Ataki takie wciąż zdarzają się często, atakowany jest dany
+wielometrowy odcinek granicy, przez który leci niezliczona liczba jabłek w jednym momencie.
+Dekametrowcy nie mogą opuścić swojego odcinka granicy, a najskuteczniejszą obroną przed
+lecącymi jabłkami okazuje się salwa. Najgłośniejszy z krasnoludków atakowanej części granicy
+powinien wydać sekwencję poleceń: „strzały na cięciwy – naciągnąć cięciwy – strzał!”. Głos
+krasnoludka jest jego dumą i sprawą drażliwą, niełatwo więc przychodzi im ustalenie najgłośniejszego. Zaproponuj szybki sposób znajdowania dekametrowca z danego kawałka granicy,
+który winien wydać rozkazy.
+Jak widać, królewna i książę muszą wykonać ogrom pracy, wykorzystując skomplikowane
+działania. Martwią się, że ta wiedza zaginie. Pomóż im zapisać cenną wiedzę w elektronicznych księgach, oszczędzając elektroniczny papier. Zatroszcz się, żeby potomni mogli szybko
+wyszukiwać potrzebne informacje.
+1
+Co powinny przygotować zespoły studenckie
+W ramach projektu należy przygotować rozwiązanie problemu przedstawionego powyżej.
+Rozwiązanie powinno składać się z:
+• dokumentacji,
+• plików programów,
+• opisu poprawności rozwiązania,
+• raportów przeprowadzonych testów.
+Wyniki pracy powinny być zapisywane z wykorzystaniem systemu Git (prowadzący powinien mieć dostęp do repozytorium). Projekt będzie oceniany zgodnie z informacjami przedstawionymi na USOS. Każda osoba będzie musiała wypełnić dwie ankiety: opisującą jej wkład
+w rozwiązanie problemu oraz oceniającą kompletność rozwiązania problemów przez zespół, do
+którego należy.
+2

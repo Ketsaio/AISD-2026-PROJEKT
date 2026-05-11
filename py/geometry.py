@@ -1,10 +1,6 @@
-import sys
-
-# Dodanie ścieżki do projektu, aby można było importować models2.py
-sys.path.append(r"C:\Users\Filip\Desktop\AISD-2026-PROJEKT")
-
 from typing import List
-from models2 import Punkt, Kopalnia
+from models import Punkt, Kopalnia
+import math
 
 
 def orientation(a: Punkt, b: Punkt, c: Punkt) -> float:
