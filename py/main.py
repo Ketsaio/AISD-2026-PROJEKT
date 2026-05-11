@@ -1,99 +1,224 @@
+from time import time
+from collections import Counter
 import random
 import models
-from time import time
+import pygame
+import math
+from datetime import datetime
 
 from geometry import graham_scan, perimeter
 from range_query import SparseTable
 from archive import Huffman, KMP
 
+def wizualizacja(krasnale, kopalnie, przydzial):
+    
+    pygame.init()    
+    screen = pygame.display.set_mode((1280, 720))
+    clock = pygame.time.Clock()
+    running = True
+    czcionka = pygame.font.Font(None, 20)
+    
+    KOLOR_CZCIONKI = (0,0,0)
+    SZYBKOSC_RUCHU = 2.5
+
+    przydzielenie = {}
+    for worker_id, mine_id in przydzial:
+        przydzielenie[krasnale[worker_id]] = kopalnie[mine_id]
+
+    while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.fill((255,255,255))
+
+        for mine in kopalnie:
+            x,y = mine.x, mine.y
+            tekst = ""
+
+            match mine.getSurowiec():
+                case models.Surowiec.ZLOTO: 
+                    tekst = "Złoto"
+                case models.Surowiec.WEGIEL:
+                    tekst = "Węgiel"
+                case models.Surowiec.MIEDZ:
+                    tekst = "Miedź"
+                case models.Surowiec.URAN:
+                    tekst = "Uran"
+
+            napis = czcionka.render(tekst, True, KOLOR_CZCIONKI)
+
+            pole_napisu = napis.get_rect()
+            pole_napisu.centerx = x + 5
+            pole_napisu.bottom = y - 5
+
+            pygame.draw.rect(screen, (0, 255, 0), (x, y, 10, 10))
+            screen.blit(napis, pole_napisu)
+
+        for worker in krasnale:
+            x,y = worker.x, worker.y
+
+            tekst = ""
+
+            match worker.getSurowiec():
+                case models.Surowiec.ZLOTO: 
+                    tekst = "Z"
+                case models.Surowiec.WEGIEL:
+                    tekst = "W"
+                case models.Surowiec.MIEDZ:
+                    tekst = "M"
+                case models.Surowiec.URAN:
+                    tekst = "U"            
+
+            napis = czcionka.render(tekst, True, KOLOR_CZCIONKI)
+
+            pygame.draw.rect(screen, (255, 0, 0), (x, y, 10, 10))
+            screen.blit(napis, (x, y-20))
+
+    
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+    
+def generuj_raport_dzienny(liczba_krasnali, liczba_kopalni, przydzial, dystans_patrolu, punkty_otoczki, liczba_straznikow, liczba_atakow):
+    data_utworzenia = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    linie = [
+        f"RAPORT Z DNIA {data_utworzenia} \n",
+        "I. Krasnoludki i kopalnie:",
+        f"    - Pracujące krasnoludki: {liczba_krasnali}",
+        f"    - Aktywne kopalnie: {liczba_kopalni}\n",
+        "Przykładowe przydziały:"
+    ]
+
+    for krasnal, kopalnia in przydzial[:5]:
+        linie.append(f"  -> Krasnoludek (ID: {krasnal}) skierowany do kopalni (ID: {kopalnia})")
+
+    linie.extend([
+        "\nII. Bezpieczeństwo królestwa:",
+        f"    - Długość trasy księcia: {dystans_patrolu:.2f} metrów",
+        f"    - Obejmuje {len(punkty_otoczki)} punktów\n",
+        "III. Obrona granic:",
+        f"    - Granic chronią {liczba_straznikow} strazników",
+        f"    - Liczba ataków na królestwo: {liczba_atakow}\n"
+    ])
+
+    return "\n".join(linie)
+
+
 def main():
-
     print("--- ETAP 1: Przydział pracy ---")
-    num_workers = 50
-    num_mines = 10
-    mine_capacity = 5
+    liczba_krasnali = 60
+    miejsce_w_kopalniach = 5
 
-    workers = []
-    mines = []
+    krasnale = []
+    kopalnie = []
 
     start = time()
 
-    mozliwe_surowce = []
+    mozliwe_surowce = [models.Surowiec.ZLOTO, models.Surowiec.WEGIEL, models.Surowiec.MIEDZ, models.Surowiec.URAN]
 
-    for _ in range(num_workers):
-        surowiec = random.choice([models.Surowiec.ZLOTO, models.Surowiec.WEGIEL, models.Surowiec.MIEDZ, models.Surowiec.URAN])
-
-        if surowiec not in mozliwe_surowce:
-            mozliwe_surowce.append(surowiec)
-
-        workers.append(models.Krasnoludek(random.uniform(0, 100), random.uniform(0, 100), surowiec))
-
-    for _ in range(num_mines):
+    ile_pracowników = Counter()
+    for _ in range(liczba_krasnali):
         surowiec = random.choice(mozliwe_surowce)
-        mines.append(models.Kopalnia(random.uniform(0, 100), random.uniform(0, 100), surowiec, mine_capacity))
+        ile_pracowników[surowiec] += 1
 
-    assignments = models.mcmf(workers, mines)
+        x = random.uniform(350, 930)
+        y = random.uniform(250, 470)
+
+        krasnale.append(models.Krasnoludek(x, y, surowiec))
+
+    for surowiec in mozliwe_surowce:
+        liczba_gornikow = ile_pracowników[surowiec]
+        liczba_kopalni = math.ceil(liczba_gornikow / miejsce_w_kopalniach)
+
+        for _ in range(liczba_kopalni):
+            match surowiec:
+                case models.Surowiec.ZLOTO:
+                    x = random.uniform(50, 300)
+                    y = random.uniform(50, 200)
+                case models.Surowiec.WEGIEL:
+                    x = random.uniform(980, 1230)
+                    y = random.uniform(50, 200)
+                case models.Surowiec.MIEDZ:
+                    x = random.uniform(50, 300)
+                    y = random.uniform(520, 670)
+                case models.Surowiec.URAN:
+                    x = random.uniform(980, 1230)
+                    y = random.uniform(520, 670)
+
+            kopalnie.append(models.Kopalnia(x, y, surowiec, miejsce_w_kopalniach))
+
+    przydzial = models.mcmf(krasnale, kopalnie)
     
     print(time() - start)
 
-    print(f"Przydzielono {len(assignments)} krasnoludków do pracy.")
-    for dwarf_idx, mine_idx in assignments[:5]:
-        print(f"  Krasnoludek #{dwarf_idx} -> Kopalnia #{mine_idx}")
-    if len(assignments) > 5:
+    print(f"Przydzielono {len(przydzial)} krasnoludków do pracy.")
+    for krasnal, kopalnia in przydzial[:5]:
+        print(f"  Krasnoludek #{krasnal} -> Kopalnia #{kopalnia}")
+    if len(przydzial) > 5:
         print("  ...")
 
     print("\n--- ETAP 2: Wyznaczanie trasy patrolu ---")
-    used_mine_indices = set(mine_idx for _, mine_idx in assignments)
-    used_mines = [mines[i] for i in used_mine_indices]
+    uzyte_indeksy = set(kopalnia for _, kopalnia in przydzial)
+    uzyte_kopalnie = [kopalnie[i] for i in uzyte_indeksy]
 
-    print(f"Liczba używanych kopalni (wierzchołków do otoczenia): {len(used_mines)}")
+    print(f"Liczba używanych kopalni (wierzchołków do otoczenia): {len(uzyte_kopalnie)}")
     
-    hull_points = graham_scan(used_mines)
-    patrol_dist = perimeter(hull_points)
+    punkty_otoczki = graham_scan(uzyte_kopalnie)
+    dystans_patrolu = perimeter(punkty_otoczki)
     
-    print(f"Liczba wierzchołków otoczki wypukłej: {len(hull_points)}")
-    print(f"Codzienny dystans patrolu księcia: {patrol_dist:.2f} metrów")
+    print(f"Liczba wierzchołków otoczki wypukłej: {len(punkty_otoczki)}")
+    print(f"Codzienny dystans patrolu księcia: {dystans_patrolu:.2f} metrów")
 
     print("\n--- ETAP 3: Dekametrowcy i rozkazy (RMQ) ---")
-    guards_volumes = [random.randint(10, 150) for _ in range(1000)]
-    
-    st = SparseTable(guards_volumes)
 
-    atak_start = 150
-    atak_end = 250
-    loudest_volume = st.query(atak_start, atak_end)
+    liczba_straznikow = max(2, int(dystans_patrolu // 10))
+    print(f"Na trasie patrolu rozstawiono {liczba_straznikow} dekametrowców (co 10 metrów).")
+
+    glosnosc_straznikow = [random.randint(10, 150) for _ in range(1000)]
     
-    print(f"Atak jabłkami na odcinek od {atak_start} do {atak_end}!")
-    print(f"Najgłośniejszy krasnoludek wyda rozkaz z głośnością: {loudest_volume}")
+    st = SparseTable(glosnosc_straznikow)
+
+    liczba_atakow = 5
+    print(f"Symulacja {liczba_atakow} nagłych ataków na granice:")
+
+    for i in range(1, liczba_atakow + 1):
+        poczatek_ataku = random.randint(0, liczba_straznikow - 2)
+        koniec_ataku = random.randint(poczatek_ataku + 1, liczba_straznikow - 1)
+        
+        najglosniejszy = st.query(poczatek_ataku, koniec_ataku)
+        
+        print(f"  [Atak #{i}] Odcinek {poczatek_ataku}-{koniec_ataku}: Rozkaz do salwy wydaje krasnoludek o głośności {najglosniejszy}")
+    
+    print(f"Atak jabłkami na odcinek od {poczatek_ataku} do {koniec_ataku}!")
+    print(f"Najgłośniejszy krasnoludek wyda rozkaz z głośnością: {najglosniejszy}")
 
 
     print("\n--- ETAP 4: Archiwizacja wiedzy ---")
-    
-    tekst_wiedzy = ""
 
-    with open("zadanie_out.txt", "w") as plik:
-        pass
+    raport = generuj_raport_dzienny(liczba_krasnali, liczba_kopalni, przydzial, dystans_patrolu, punkty_otoczki, liczba_straznikow, liczba_atakow)
 
-    with open("zadanie.txt", "r", encoding="UTF-8") as plik:
-        tekst_wiedzy = plik.read()
-
-    huffman = Huffman(tekst_wiedzy)
+    huffman = Huffman(raport)
     skompresowany = huffman.kompresuj()
     
-    # print(f"Oryginalny tekst (długość {len(tekst_wiedzy)} znaków): '{tekst_wiedzy}'")
+    print(f"Oryginalny tekst (długość {len(raport)} znaków): '{raport}'")
     print(f"Skompresowany tekst bitowy (długość {len(skompresowany)} bitów): {skompresowany[:50]}...")
-
-    print(huffman.dekompresuj(skompresowany))
 
     with open("zadanie_out.txt", "w", encoding="UTF-8") as plik:
         plik.write(skompresowany)
     
-    assert huffman.dekompresuj() == tekst_wiedzy
+    assert huffman.dekompresuj() == raport
     print("Dekompresja przebiegła pomyślnie i bezstratnie.")
 
     wzorzec = "nie"
-    wyniki_kmp = KMP.algorytm_KMP(tekst_wiedzy, wzorzec)
+    wyniki_kmp = KMP.algorytm_KMP(raport, wzorzec)
     print(f"Wyszukiwanie wzorca KMP dla słowa '{wzorzec}': Znaleziono na indeksach {wyniki_kmp}")
+
+    wizualizacja(krasnale, kopalnie, przydzial)
 
 
 if __name__ == "__main__":
