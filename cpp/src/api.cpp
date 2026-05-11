@@ -19,10 +19,12 @@ PYBIND11_MODULE(models, handle) {
 		.def_readwrite("y", &Node::y);
 
 	py::class_<Mine, Node>(handle, "Kopalnia")
-		.def(py::init<double, double, Resource, int>());
+		.def(py::init<double, double, Resource, int>())
+		.def("getSurowiec", &Mine::getResource);
 
 	py::class_<Worker, Node>(handle, "Krasnoludek")
-		.def(py::init<double, double, Resource>());
+		.def(py::init<double, double, Resource>())
+		.def("getSurowiec", &Worker::getPreference);
 
 	handle.def("mcmf", &minimumCostMaximumFlow);
 }
