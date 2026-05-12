@@ -10,28 +10,115 @@ from geometry import graham_scan, perimeter
 from range_query import SparseTable
 from archive import Huffman, KMP
 
-def wizualizacja(krasnale, kopalnie, przydzial):
+def wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki):
     
-    pygame.init()    
+    pygame.init()
     screen = pygame.display.set_mode((1280, 720))
     clock = pygame.time.Clock()
     running = True
     czcionka = pygame.font.Font(None, 20)
     
     KOLOR_CZCIONKI = (0,0,0)
-    SZYBKOSC_RUCHU = 2.5
 
     przydzielenie = {}
     for worker_id, mine_id in przydzial:
         przydzielenie[krasnale[worker_id]] = kopalnie[mine_id]
+
+    print(przydzielenie)
+
+    sciezki = {}
+    for krasnal, kopalnia in przydzielenie.items():
+        punkty = []
+
+        obecny_x = krasnal.x
+        obecny_y = krasnal.y
+
+        while True:
+
+            kierunki = []
+
+            if obecny_x != kopalnia.x:
+                kierunki.append("X")
+
+            if obecny_y != kopalnia.y:
+                kierunki.append("Y")
+ 
+
+            if not kierunki:
+                break
+
+            kierunek = random.choice(kierunki)
+
+            if kierunek == "X":
+                
+                znak = 1 if kopalnia.x > obecny_x else -1
+
+                ile_krokow = random.randint(1,4)
+                
+                for _ in range(ile_krokow):
+                    dystans_x = abs(kopalnia.x - obecny_x)
+
+                    if dystans_x == 0:
+                        break
+
+                    elif dystans_x <= 4:
+                        obecny_x = kopalnia.x
+                    
+                    else:
+                        obecny_x += 4 * znak
+
+                    punkty.append((obecny_x, obecny_y))
+
+
+            if kierunek == "Y":
+                
+                znak = 1 if kopalnia.y > obecny_y else -1
+
+                ile_krokow = random.randint(1,4)
+                
+                for _ in range(ile_krokow):
+                    dystans_y = abs(kopalnia.y - obecny_y)
+
+                    if dystans_y == 0:
+                        break
+
+                    elif dystans_y <= 4:
+                        obecny_y = kopalnia.y
+                    
+                    else:
+                        obecny_y += 4 * znak
+
+                    punkty.append((obecny_x, obecny_y))
+
+        sciezki[krasnal] = punkty
+
+    state = 0
 
     while running:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    state += 1
 
         screen.fill((255,255,255))
+        
+        if state == 1:
+            for krasnal in krasnale:
+                if krasnal in sciezki:
+                    punkty = sciezki[krasnal]
+                    if punkty:
+                        next_punkt = punkty[0]
+                        dx = next_punkt[0] - krasnal.x
+                        dy = next_punkt[1] - krasnal.y
+
+                        krasnal.x += dx
+                        krasnal.y += dy
+
+                        punkty.pop(0)
+        
 
         for mine in kopalnie:
             x,y = mine.x, mine.y
@@ -55,6 +142,11 @@ def wizualizacja(krasnale, kopalnie, przydzial):
 
             pygame.draw.rect(screen, (0, 255, 0), (x, y, 10, 10))
             screen.blit(napis, pole_napisu)
+
+        for krasnal, punkty in sciezki.items():
+            for p in punkty:
+                pygame.draw.rect(screen, (150,150,150), (p[0], p[1], 4 ,4))
+
 
         for worker in krasnale:
             x,y = worker.x, worker.y
@@ -111,7 +203,7 @@ def generuj_raport_dzienny(liczba_krasnali, liczba_kopalni, przydzial, dystans_p
 
 def main():
     print("--- ETAP 1: Przydział pracy ---")
-    liczba_krasnali = 60
+    liczba_krasnali = 10
     miejsce_w_kopalniach = 5
 
     krasnale = []
@@ -218,7 +310,9 @@ def main():
     wyniki_kmp = KMP.algorytm_KMP(raport, wzorzec)
     print(f"Wyszukiwanie wzorca KMP dla słowa '{wzorzec}': Znaleziono na indeksach {wyniki_kmp}")
 
-    wizualizacja(krasnale, kopalnie, przydzial)
+    print(przydzial)
+
+    wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki)
 
 
 if __name__ == "__main__":
