@@ -151,9 +151,11 @@ vector<pair<int, int>> minimumCostMaximumFlow(const std::vector<Worker>& workers
 	// add edges from dwarves to mines
 	for (int i = 1; i <= dwarfCounter; ++i) {
 		for (int j = 1; j <= mineCounter; ++j) {
-			double distance = workers[i - 1].getDistance(mines[j - 1]);
-			int mineNodeIdx = dwarfCounter + j;
-			graph.addEdge(i, mineNodeIdx, 1, distance);
+			if (workers[i - 1].getPreference() == mines[j - 1].getResource()) {
+				double distance = workers[i - 1].getDistance(mines[j - 1]);
+				int mineNodeIdx = dwarfCounter + j;
+				graph.addEdge(i, mineNodeIdx, 1, distance);
+			}
 		}
 	}
 
