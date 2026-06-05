@@ -413,7 +413,13 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
     if czy_wizualizacja and czy_gui:
         wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, st, raport, skompresowany)
 
-    logging.warning(f"Zakończono obliczenia, czas potrzebny do wykonania: {perf_counter() - start:.6f} sekund")
+    czas = perf_counter() - start
+
+    if czy_gui:
+        logging.info(f"Zakończono obliczenia, czas potrzebny do wykonania: {czas:.6f} sekund")
+    else:
+        return czas
+
 
 def startup():
 
