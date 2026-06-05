@@ -175,7 +175,7 @@ def wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, s
                     
                     tekst_informacyjny = f"ATAK #{indeks_obecnego_ataku + 1}: Najgłośniejszy (ID {indeks}): {atak['najglosniejsza_wartosc']} dB"
                     napis = czcionka_duza.render(tekst_informacyjny, True, KOLOR_CZCIONKI)
-                    ekran.blit(napis, (50, 50))
+                    ekran.blit(napis, (350, 300))
 
             for kopalnia in kopalnie:
                 x, y = kopalnia.x, kopalnia.y
@@ -199,6 +199,12 @@ def wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, s
                     pygame.draw.rect(ekran, (150, 150, 150), (p[0], p[1], 4, 4))
 
             for pracownik in krasnale:
+
+                kopalnia = przydzielenie.get(pracownik)
+
+                if kopalnia is not None and abs(pracownik.x - kopalnia.x) < 0.1 and abs(pracownik.y - kopalnia.y) < 0.1:
+                    continue
+
                 x, y = pracownik.x, pracownik.y
                 tekst = ""
                 match pracownik.getSurowiec():
@@ -407,7 +413,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
     if czy_wizualizacja and czy_gui:
         wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, st, raport, skompresowany)
 
-    logging.warning(f"Zakończono obliczenia, czas potrzebny do wykonania: {perf_counter() - start:.2f} sekund")
+    logging.warning(f"Zakończono obliczenia, czas potrzebny do wykonania: {perf_counter() - start:.6f} sekund")
 
 def startup():
 
