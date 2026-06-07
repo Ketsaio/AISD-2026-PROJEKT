@@ -1,5 +1,6 @@
 .vscode/
 .venv
 __pycache__/
+cleanup_pybind_headers.sh
 zadanie_out.txt
 czasowe.txt
