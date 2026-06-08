@@ -5,22 +5,32 @@ from main import main
 
 ILE_TESTOW = 40
 
-with open("czasowe.txt", "w", encoding="utf-8") as plik:
-    for i in range(ILE_TESTOW):
-        liczba_krasnali = random.randint(100, 1000)
-        miejsce_w_kopalni = random.randint(10, 100)
-        liczba_atakow = random.randint(1, 30)
+def test(krasnale, miejsce, ataki):
 
-        czas = main(
-            liczba_krasnali,
-            miejsce_w_kopalni,
-            liczba_atakow,
-            False,
-            False
-        )
+    with open("czasowe.txt", "w", encoding="utf-8") as plik:
+        for i in range(ILE_TESTOW):
+            liczba_krasnali = random.randint(*krasnale)
+            miejsce_w_kopalni = random.randint(*miejsce)
+            liczba_atakow = random.randint(*ataki)
 
-        plik.write(
-            f"{liczba_krasnali};{miejsce_w_kopalni};{liczba_atakow};{czas:.6f}\n"
-        )
+            czas = main(
+                liczba_krasnali,
+                miejsce_w_kopalni,
+                liczba_atakow,
+                False,
+                False
+            )
 
-        print(f"Test {i + 1}: {czas}")
+            plik.write(
+                f"{liczba_krasnali};{miejsce_w_kopalni};{liczba_atakow};{czas:.6f}\n"
+            )
+
+            print(f"Test {i + 1}: {czas}")
+
+if __name__ == "__main__":
+
+    krasnale = tuple(map(int, input("Podaj zakres krasnali\n> ").split()))
+    miejsce = tuple(map(int, input("Podaj zakres miejsca\n> ").split()))
+    ataki = tuple(map(int, input("Podaj zakres ataków\n> ").split()))
+
+    test(krasnale, miejsce, ataki)
