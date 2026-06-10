@@ -400,8 +400,9 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
     logging.info(f"Oryginalny tekst (długość {len(raport)} znaków): '{raport}'")
     logging.info(f"Skompresowany tekst bitowy (długość {len(skompresowany)} bitów): {skompresowany[:50]}...")
 
-    with open("zadanie_out.txt", "w", encoding="UTF-8") as plik:
-        plik.write(skompresowany)
+    if czy_gui:
+        with open("zadanie_out.txt", "w", encoding="UTF-8") as plik:
+            plik.write(skompresowany)
     
     assert huffman.dekompresuj() == raport
     logging.info("Dekompresja przebiegła pomyślnie i bezstratnie.")
@@ -448,8 +449,9 @@ def startup():
         if czy_wizualizacja_holder.lower() == "t":
             czy_wizualizacja = True
 
-    main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacja)
-
+    czas = main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacja)
+    if czas is not None:
+        print(f"Czas potrzebny na wykonanie: {czas:.9f}")
 
 if __name__ == "__main__":
     startup()
