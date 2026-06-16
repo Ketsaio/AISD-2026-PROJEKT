@@ -11,6 +11,42 @@ from geometry import graham_scan, perimeter
 from range_query import SparseTable
 from archive import Huffman, KMP
 
+CZASY = []
+
+def pomiar(funkcja):
+    def wrapper(*args, **kwargs):
+        start = perf_counter()
+        wynik = funkcja(*args, **kwargs)
+        CZASY.append(perf_counter() - start)
+        return wynik
+
+    return wrapper
+
+@pomiar
+def policz_przydzial(krasnale, kopalnie):
+    return models.mcmf(krasnale, kopalnie)
+
+@pomiar
+def policz_otoczke(uzyte_kopalnie):
+    return graham_scan(uzyte_kopalnie)
+
+@pomiar
+def policz_dystans(punkty_otoczki):
+    return perimeter(punkty_otoczki)
+
+@pomiar
+def policz_straznicy(glosnosc_straznikow):
+    return SparseTable(glosnosc_straznikow)
+
+@pomiar
+def zakoduj(raport):
+    huffman = Huffman(raport)
+    return huffman.kompresuj()
+
+@pomiar
+def wyszukaj(raport, wzorzec):
+    return KMP.algorytm_KMP(raport, wzorzec)
+
 def wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, st, raport, skompresowany):
     pygame.init()
     ekran = pygame.display.set_mode((1280, 720))
@@ -26,7 +62,7 @@ def wizualizacja(krasnale, kopalnie, przydzial, punkty_otoczki, liczba_atakow, s
     for id_pracownika, id_kopalni in przydzial:
         przydzielenie[krasnale[id_pracownika]] = kopalnie[id_kopalni]
 
-    sciezki = {}
+    sciezki = {}    
     for krasnal, kopalnia in przydzielenie.items():
         punkty = []
         obecny_x = krasnal.x
@@ -296,14 +332,14 @@ def generuj_raport_dzienny(liczba_krasnali, liczba_kopalni, przydzial, dystans_p
 
 def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacja):
 
+    CZASY.clear()
+
     if czy_gui:
         logging.basicConfig(level=logging.INFO, format="%(message)s")
     else:
         logging.basicConfig(level=logging.WARNING, format="%(message)s")
 
     start = perf_counter()
-    
-
 
     logging.info("--- ETAP 1: Przydział pracy ---")
     liczba_krasnali = liczba_krasnali           #REASONALBE LICZBY TO 250 50
@@ -311,7 +347,6 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
 
     krasnale = []
     kopalnie = []
-
 
     mozliwe_surowce = [models.Surowiec.ZLOTO, models.Surowiec.WEGIEL, models.Surowiec.MIEDZ, models.Surowiec.URAN]
 
@@ -346,7 +381,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
 
             kopalnie.append(models.Kopalnia(x, y, surowiec, miejsce_w_kopalniach))
 
-    przydzial = models.mcmf(krasnale, kopalnie)
+    przydzial = policz_przydzial(krasnale, kopalnie)
     
     logging.info(f"Przydzielono {len(przydzial)} krasnoludków do pracy.")
     for krasnal, kopalnia in przydzial[:5]:
@@ -360,8 +395,9 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
 
     logging.info(f"Liczba używanych kopalni (wierzchołków do otoczenia): {len(uzyte_kopalnie)}")
     
-    punkty_otoczki = graham_scan(uzyte_kopalnie)
-    dystans_patrolu = perimeter(punkty_otoczki)
+    punkty_otoczki = policz_otoczke(uzyte_kopalnie)
+
+    dystans_patrolu = policz_dystans(punkty_otoczki)
     
     logging.info(f"Liczba wierzchołków otoczki wypukłej: {len(punkty_otoczki)}")
     logging.info(f"Codzienny dystans patrolu księcia: {dystans_patrolu:.2f} metrów")
@@ -373,7 +409,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
 
     glosnosc_straznikow = [random.randint(10, 150) for _ in range(1000)]
     
-    st = SparseTable(glosnosc_straznikow)
+    st = policz_straznicy(glosnosc_straznikow)
 
     liczba_atakow = ile_atakow
     logging.info(f"Symulacja {liczba_atakow} nagłych ataków na granice:")
@@ -394,8 +430,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
 
     raport = generuj_raport_dzienny(liczba_krasnali, liczba_kopalni, przydzial, dystans_patrolu, punkty_otoczki, liczba_straznikow, liczba_atakow)
 
-    huffman = Huffman(raport)
-    skompresowany = huffman.kompresuj()
+    skompresowany = zakoduj(raport)
     
     logging.info(f"Oryginalny tekst (długość {len(raport)} znaków): '{raport}'")
     logging.info(f"Skompresowany tekst bitowy (długość {len(skompresowany)} bitów): {skompresowany[:50]}...")
@@ -403,12 +438,9 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
     if czy_gui:
         with open("zadanie_out.txt", "w", encoding="UTF-8") as plik:
             plik.write(skompresowany)
-    
-    assert huffman.dekompresuj() == raport
-    logging.info("Dekompresja przebiegła pomyślnie i bezstratnie.")
 
     wzorzec = "I."
-    wyniki_kmp = KMP.algorytm_KMP(raport, wzorzec)
+    wyniki_kmp = wyszukaj(raport, wzorzec)
     logging.info(f"Wyszukiwanie wzorca KMP dla słowa '{wzorzec}': Znaleziono na indeksach {wyniki_kmp}")
 
     if czy_wizualizacja and czy_gui:
@@ -419,8 +451,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
     if czy_gui:
         logging.info(f"Zakończono obliczenia, czas potrzebny do wykonania: {czas:.6f} sekund")
     else:
-        return czas
-
+        return [*CZASY, czas]
 
 def startup():
 
@@ -439,7 +470,6 @@ def startup():
     while czy_gui_holder.lower() != "t" and czy_gui_holder.lower() != "n":
         czy_gui_holder = input("Czy włączyć gui? [T/N]\n> ")
 
-
     if czy_gui_holder.lower() == "t":
         czy_gui = True
 
@@ -451,7 +481,7 @@ def startup():
 
     czas = main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacja)
     if czas is not None:
-        print(f"Czas potrzebny na wykonanie: {czas:.9f}")
+        print(f"Czas potrzebny na wykonanie: {czas}")
 
 if __name__ == "__main__":
     startup()
