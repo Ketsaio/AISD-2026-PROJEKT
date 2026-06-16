@@ -41,7 +41,14 @@ def policz_straznicy(glosnosc_straznikow):
 @pomiar
 def zakoduj(raport):
     huffman = Huffman(raport)
-    return huffman.kompresuj()
+
+    skompresowane = huffman.kompresuj()
+
+    dekompresacja = huffman.dekompresuj()
+
+    assert dekompresacja == raport
+
+    return skompresowane
 
 @pomiar
 def wyszukaj(raport, wzorzec):
