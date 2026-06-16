@@ -28,11 +28,9 @@ class SparseTable:
         k = self.log[self.n] + 1
 
         # st[k][i] - maksimum na przedziale o długości 2^k zaczynającym się od i
-        # ZMIANA: przechowujemy teraz tuple (wartosc, indeks)
         self.st = [[(0, 0)] * self.n for _ in range(k)]
 
         # poziom 0 = pojedyncze elementy
-        # ZMIANA: inicjalizacja krotką
         for i in range(self.n):
             self.st[0][i] = (arr[i], i)
 
