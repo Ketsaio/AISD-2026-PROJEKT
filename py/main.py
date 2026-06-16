@@ -446,7 +446,7 @@ def main(liczba_krasnali, miejsce_w_kopali, ile_atakow, czy_gui, czy_wizualizacj
         with open("zadanie_out.txt", "w", encoding="UTF-8") as plik:
             plik.write(skompresowany)
 
-    wzorzec = "I."
+    wzorzec = "Krasnoludek"
     wyniki_kmp = wyszukaj(raport, wzorzec)
     logging.info(f"Wyszukiwanie wzorca KMP dla słowa '{wzorzec}': Znaleziono na indeksach {wyniki_kmp}")
 
