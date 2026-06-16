@@ -41,7 +41,6 @@ class SparseTable:
         while (1 << j) <= self.n:
             i = 0
             while i + (1 << j) <= self.n:
-                # ZMIANA: porównanie krotek po wartościach
                 val1 = self.st[j - 1][i]
                 val2 = self.st[j - 1][i + (1 << (j - 1))]
                 self.st[j][i] = val1 if val1[0] >= val2[0] else val2
